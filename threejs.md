@@ -76,3 +76,6 @@ how to install cannon.js
 
 how to uninstall cannon
 npm uninstall -- save cannon
+
+how to install cannon another way
+npm install --save cannon-es@0.15.1
