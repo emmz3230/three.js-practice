@@ -1,0 +1,22 @@
+{
+  "name": "threejs",
+  "version": "1.0.0",
+  "description": "exercise",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "deploy": "vercel --prod"
+  },
+  "author": "Emmanuel Samuel",
+  "license": "ISC",
+  "dependencies": {
+    "gsap": "^3.5.1",
+    "lil-gui": "^0.19.2",
+    "three": "^0.174.0",
+    "vercel": "^42.3.0"
+  },
+  "devDependencies": {
+    "vite": "^6.2.2"
+  }
+}
