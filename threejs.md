@@ -75,7 +75,13 @@ how to install cannon.js
             npm install -- save cannon
 
 how to uninstall cannon
-npm uninstall -- save cannon
+
+        npm uninstall -- save cannon
 
 how to install cannon another way
-npm install --save cannon-es@0.15.1
+
+            npm install --save cannon-es@0.15.1
+
+where to get 3d models
+
+            https://github.com/khronosGroup/glTF-Sample-Models
