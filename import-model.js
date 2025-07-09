@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import GUI from "lil-gui";
+import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 const gui = new GUI();
 
@@ -8,6 +9,18 @@ const canvas = document.querySelector("canvas.webgl");
 
 //scene
 const scene = new THREE.Scene();
+
+const gltfLoader = new GLTFLoader();
+gltfLoader.load(
+  "/models/FlightHelmet/glTF/FlightHelmet.gltf",
+  (gltf) => {
+    while (gltf.scene.children.length) {
+      scene.add(gltf.scene.children[0]);
+    }
+
+    console.log("success");
+  }
+);
 
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
