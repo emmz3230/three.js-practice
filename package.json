@@ -11,6 +11,7 @@
   "author": "Emmanuel Samuel",
   "license": "ISC",
   "dependencies": {
+    "cannon-es": "^0.15.1",
     "gsap": "^3.5.1",
     "lil-gui": "^0.19.2",
     "three": "^0.174.0",
