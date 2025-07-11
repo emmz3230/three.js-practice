@@ -85,3 +85,63 @@ how to install cannon another way
 where to get 3d models
 
             https://github.com/khronosGroup/glTF-Sample-Models
+
+enter fly mode on blender
+
+        shift + backtick(`)
+
+to see camera
+
+                press numpad 0
+
+focus scene on an object
+
+        press left click and comma(,) on the numpad(number part of the keyboard)
+
+focus on one object alone
+
+         press left click and slash(/) on the numpad(number part of the keyboard)
+
+to select
+
+                shift + left click
+
+to select all
+
+                click A
+                unseclect A + A
+
+select a rectangle
+
+        click B
+        unseclect A + A
+
+select painting
+
+        click  C and scroll to be big or small
+
+to add any object
+
+        shift + A
+
+to reopen panel for uvshpere if lost
+
+        fn + f9
+
+to see menu on left top side
+
+        click T
+
+to change position,the rotation and the scale
+
+        click G
+        click R
+        click S
+
+to add loop cut
+
+        ctrl + r
+
+to search on object
+
+                f3

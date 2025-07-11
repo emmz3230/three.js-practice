@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import GUI from "lil-gui";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
+import { DRACOLoader } from "three/examples/jsm/Addons.js";
 
 const gui = new GUI();
 
@@ -10,17 +11,32 @@ const canvas = document.querySelector("canvas.webgl");
 //scene
 const scene = new THREE.Scene();
 
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("/draco/");
+let mixer = null;
 const gltfLoader = new GLTFLoader();
-gltfLoader.load(
-  "/models/FlightHelmet/glTF/FlightHelmet.gltf",
-  (gltf) => {
-    while (gltf.scene.children.length) {
-      scene.add(gltf.scene.children[0]);
-    }
+gltfLoader.setDRACOLoader(dracoLoader);
+gltfLoader.load("/models/Fox/glTF/Fox.gltf", (gltf) => {
+  mixer = new THREE.AnimationMixer(gltf.scene);
+  const action = mixer.clipAction(gltf.animations[2]);
 
-    console.log("success");
-  }
-);
+  action.play();
+
+  gltf.scene.scale.set(0.025, 0.025, 0.025);
+  scene.add(gltf.scene);
+
+  // const children = [...gltf.scene.children];
+
+  // for (const child of children) {
+  //   scene.add(child);
+  // }
+  // while (gltf.scene.children.length) {
+  //   scene.add(gltf.scene.children[0]);
+  // }
+
+  // scene.add(gltf.scene.children[0]);
+  console.log("success");
+});
 
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
@@ -97,6 +113,11 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
   const deltaTime = elapsedTime - previousTime;
   previousTime = elapsedTime;
+
+  // update mixer
+  if (mixer !== null) {
+    mixer.update(deltaTime);
+  }
 
   // Update controls
   controls.update();
