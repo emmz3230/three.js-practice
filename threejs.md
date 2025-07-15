@@ -145,3 +145,7 @@ to add loop cut
 to search on object
 
                 f3
+
+what is HDRi
+
+        High Dynamic Range Image
