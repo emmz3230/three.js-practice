@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
-
+import { GroundedSkybox } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
 
 /**
@@ -27,10 +27,14 @@ const updateAllMaterial = () => {
   });
 };
 
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+
 const gltfLoader = new GLTFLoader();
 const cubeTesxtureLoader = new THREE.CubeTextureLoader();
 const rgbeLoader = new RGBELoader();
 const exrLoader = new EXRLoader();
+const textureLoader = new THREE.TextureLoader();
 
 // const environmentMap = cubeTesxtureLoader.load([
 //   "/environmentMaps/0/px.png",
@@ -47,21 +51,61 @@ scene.backgroundIntensity = 1;
 
 // hdr rgbe Equirectangular
 
-// rgbeLoader.load("/environmentMaps/0/2k.hdr", (environmentMap) => {
+// rgbeLoader.load("/environmentMaps/2/2k.hdr", (environmentMap) => {
 //   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
 //   scene.environment = environmentMap;
-//   scene.background = environmentMap;
+
+//   const skybox = new GroundedSkybox(environmentMap);
+//   skybox.radius = 120;
+//   skybox.height = 11;
+//   skybox.scale.setScalar(50);
+//   scene.add(skybox);
+
+//   gui.add(skybox, "radius", 1, 200, 0.1).name("skyboxRadius");
+//   gui.add(skybox, "height", 1, 200, 0.1).name("skyboxHeight");
 // });
 
 // hdr (exr) equirectangular
-exrLoader.load(
-  "/environmentMaps/nvidiaCanvas-4k.exr",
-  (environmentMap) => {
-    environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-    scene.background = environmentMap;
-    scene.environment = environmentMap;
-  }
+// exrLoader.load(
+//   "/environmentMaps/nvidiaCanvas-4k.exr",
+//   (environmentMap) => {
+//     environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+//     scene.background = environmentMap;
+//     scene.environment = environmentMap;
+//   }
+// );
+
+// ldr Equirectangular
+// const environmentMap = textureLoader.load(
+//   "/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg"
+// );
+// environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+// environmentMap.colorSpace = THREE.SRGBColorSpace;
+
+// scene.background = environmentMap;
+// scene.environemnt = environmentMap;
+
+// real time enviromentMap
+const environmentMap = textureLoader.load(
+  "/environmentMaps/blockAdesLabsSkybox/interior_of_a_modern_living_room_with_a_view_of_the_city_at_night.jpg"
 );
+environmentMap.mapping = THREE.EquirectangularReflectionMapping;
+environmentMap.colorSpace = THREE.SRGBColorSpace;
+
+scene.background = environmentMap;
+
+const holyDonut = new THREE.Mesh(
+  new THREE.TorusKnotGeometry(8, 0.5),
+  new THREE.MeshStandardMaterial({
+    color: "white",
+  })
+);
+holyDonut.position.y = 3.5;
+scene.add(holyDonut);
+
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
+  type: THREE.FloatType,
+});
 
 const torusKnot = new THREE.Mesh(
   new THREE.TorusKnotGeometry(1, 0.4, 100, 16),
@@ -158,6 +202,11 @@ let previousTime = 0;
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+
+  // render
+  if (holyDonut) {
+    holyDonut.rotation.x = Math.sin(elapsedTime) * 2;
+  }
 
   // Update controls
   controls.update();
