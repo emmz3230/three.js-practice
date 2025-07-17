@@ -1,18 +1,18 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-import { EXRLoader } from "three/examples/jsm/loaders/EXRLoader.js";
-// import { GroundedSkybox } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
-import { mx_bilerp_0 } from "three/src/nodes/materialx/lib/mx_noise.js";
+
+const gltfLoader = new GLTFLoader();
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+const textureLoader = new THREE.TextureLoader();
 
 /**
  * Base
  */
 // Debug
 const gui = new GUI();
-const global = {};
+const debugObject = {};
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -25,89 +25,85 @@ const updateAllMaterials = () => {
     if (child.isMesh && child.material.isMeshStandardMaterial) {
       child.material.envMapIntensity = global.envMapIntensity;
 
+      child.material.envMapIntensity = debugObject.envMapIntensity;
+      child.material.needsUpdate = true;
       child.castShadow = true;
       child.receiveShadow = true;
     }
   });
 };
+/**
+ * Environment map
+ */
+const environmentMap = cubeTextureLoader.load([
+  "/textures/environmentMap/px.jpg",
+  "/textures/environmentMap/nx.jpg",
+  "/textures/environmentMap/py.jpg",
+  "/textures/environmentMap/ny.jpg",
+  "/textures/environmentMap/pz.jpg",
+  "/textures/environmentMap/nz.jpg",
+]);
 
-const gltfLoader = new GLTFLoader();
-const cubeTextureLoader = new THREE.CubeTextureLoader();
-const rgbeLoader = new RGBELoader();
-const exrLoader = new EXRLoader();
-const textureLoader = new THREE.TextureLoader();
+environmentMap.colorSpace = THREE.SRGBColorSpace;
 
-// const environmentMap = cubeTesxtureLoader.load([
-//   "/environmentMaps/0/px.png",
-//   "/environmentMaps/0/nx.png",
-//   "/environmentMaps/0/py.png",
-//   "/environmentMaps/0/ny.png",
-//   "/environmentMaps/0/pz.png",
-//   "/environmentMaps/0/nz.png",
-// ]);
-// scene.environment = environmentMap;
-// scene.background = environmentMap;
-scene.backgroundBluriness = 0;
-scene.backgroundIntensity = 1;
+// scene.background = environmentMap
+scene.environment = environmentMap;
 
-gui.add(scene, "backgroundBlurriness").min(0).max(1).step(0.001);
-gui.add(scene, "backgroundIntensity").min(0).max(10).step(0.001);
+debugObject.envMapIntensity = 0.4;
 
-global.envMapIntensity = 1;
 gui
-  .add(global, "envMapIntensity")
+  .add(debugObject, "envMapIntensity")
   .min(0)
-  .max(10)
+  .max(4)
   .step(0.001)
   .onChange(updateAllMaterials);
 
-// hdr rgbe Equirectangular
+let foxMixer = null;
 
-// rgbeLoader.load("/environmentMaps/2/2k.hdr", (environmentMap) => {
-//   environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-//   scene.environment = environmentMap;
+gltfLoader.load("/models/Fox/glTF/Fox.gltf", (gltf) => {
+  // Model
+  gltf.scene.scale.set(0.02, 0.02, 0.02);
+  scene.add(gltf.scene);
 
-//   const skybox = new GroundedSkybox(environmentMap);
-//   skybox.radius = 120;
-//   skybox.height = 11;
-//   skybox.scale.setScalar(50);
-//   scene.add(skybox);
+  // Animation
+  foxMixer = new THREE.AnimationMixer(gltf.scene);
+  const foxAction = foxMixer.clipAction(gltf.animations[0]);
+  foxAction.play();
 
-//   gui.add(skybox, "radius", 1, 200, 0.1).name("skyboxRadius");
-//   gui.add(skybox, "height", 1, 200, 0.1).name("skyboxHeight");
-// });
-
-// hdr (exr) equirectangular
-// exrLoader.load(
-//   "/environmentMaps/nvidiaCanvas-4k.exr",
-//   (environmentMap) => {
-//     environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-//     scene.background = environmentMap;
-//     scene.environment = environmentMap;
-//   }
-// );
-
-// ldr Equirectangular
-// const environmentMap = textureLoader.load(
-//   "/environmentMaps/blockadesLabsSkybox/anime_art_style_japan_streets_with_cherry_blossom_.jpg"
-// );
-// environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-// environmentMap.colorSpace = THREE.SRGBColorSpace;
-
-// scene.background = environmentMap;
-// scene.environemnt = environmentMap;
-
-// real time enviromentMap
-rgbeLoader.load("/environmentMaps/0/2k.hdr", (environmentMap) => {
-  environmentMap.mapping = THREE.EquirectangularReflectionMapping;
-
-  scene.background = environmentMap;
-  scene.environment = environmentMap;
+  // Update materials
+  updateAllMaterials();
 });
 
-const directionalLight = new THREE.DirectionalLight("#ffffff", 1);
-directionalLight.position.set(-4, 6.3, 2.5);
+const floorColorTexture = textureLoader.load(
+  "textures/dirt/color.jpg"
+);
+floorColorTexture.colorSpace = THREE.SRGBColorSpace;
+floorColorTexture.repeat.set(1.5, 1.5);
+floorColorTexture.wrapS = THREE.RepeatWrapping;
+floorColorTexture.wrapT = THREE.RepeatWrapping;
 
+const floorNormalTexture = textureLoader.load(
+  "textures/dirt/normal.jpg"
+);
+floorNormalTexture.repeat.set(1.5, 1.5);
+floorNormalTexture.wrapS = THREE.RepeatWrapping;
+floorNormalTexture.wrapT = THREE.RepeatWrapping;
+
+const floorGeometry = new THREE.CircleGeometry(5, 64);
+const floorMaterial = new THREE.MeshStandardMaterial({
+  map: floorColorTexture,
+  normalMap: floorNormalTexture,
+});
+const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+floor.rotation.x = -Math.PI * 0.5;
+scene.add(floor);
+
+const directionalLight = new THREE.DirectionalLight("#ffffff", 1);
+directionalLight.castShadow = true;
+directionalLight.shadow.camera.far = 15;
+directionalLight.shadow.mapSize.set(1024, 1024);
+directionalLight.shadow.normalBias = 0.05;
+directionalLight.position.set(3.5, 2, -1.25);
 scene.add(directionalLight);
 
 gui
@@ -118,128 +114,22 @@ gui
   .name("lightIntensity");
 gui
   .add(directionalLight.position, "x")
-  .min(-10)
-  .max(10)
+  .min(-5)
+  .max(5)
   .step(0.001)
   .name("lightX");
 gui
   .add(directionalLight.position, "y")
-  .min(-10)
-  .max(10)
+  .min(-5)
+  .max(5)
   .step(0.001)
   .name("lightY");
 gui
   .add(directionalLight.position, "z")
-  .min(-10)
-  .max(10)
+  .min(-5)
+  .max(5)
   .step(0.001)
   .name("lightZ");
-
-directionalLight.castShadow = true;
-directionalLight.shadow.camera.far = 15;
-directionalLight.shadow.normalBias = 0.027;
-directionalLight.shadow.bias = -0.004;
-directionalLight.shadow.mapSize.set(512, 512);
-
-gui.add(directionalLight, "castShadow");
-gui
-  .add(directionalLight.shadow, "normalBias")
-  .min(-0.05)
-  .max(0.05)
-  .step(0.001);
-gui
-  .add(directionalLight.shadow, "bias")
-  .min(-0.05)
-  .max(0.05)
-  .step(0.001);
-
-// const directionalLightHelper = new THREE.CameraHelper(directionalLight.shadow.camera)
-// scene.add(directionalLightHelper)
-
-directionalLight.target.position.set(0, 4, 0);
-directionalLight.target.updateWorldMatrix();
-
-const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256, {
-  type: THREE.HalfFloatType,
-});
-scene.environment = cubeRenderTarget;
-
-// cube camera
-const cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRenderTarget);
-cubeCamera.layers.set(1);
-
-/**
- * Models
- */
-
-// gltfLoader.load(
-//   "/models/FlightHelmet/glTF/FlightHelmet.gltf",
-//   (gltf) => {
-//     gltf.scene.scale.set(10, 10, 10);
-//     scene.add(gltf.scene);
-
-//     updateAllMaterials();
-//   }
-// );
-
-gltfLoader.load("/models/hamburger.glb", (gltf) => {
-  gltf.scene.scale.set(0.4, 0.4, 0.4);
-  gltf.scene.position.set(0, 2.5, 0);
-  scene.add(gltf.scene);
-
-  updateAllMaterials();
-});
-
-const floorColorTexture = textureLoader.load(
-  "/textures/wood_cabinet_worn_long/wood_cabinet_worn_long_diff_1k.jpg"
-);
-const floorNormalTexture = textureLoader.load(
-  "/textures/wood_cabinet_worn_long/wood_cabinet_worn_long_nor_gl_1k.png"
-);
-const floorAoRoughnessMetalnessTexture = textureLoader.load(
-  "/textures/wood_cabinet_worn_long/wood_cabinet_worn_long_arm_1k.jpg"
-);
-
-floorColorTexture.colorSpace = THREE.SRGBColorSpace;
-
-const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(8, 8),
-  new THREE.MeshStandardMaterial({
-    map: floorColorTexture,
-    normalMap: floorNormalTexture,
-    aoMap: floorAoRoughnessMetalnessTexture,
-    roughnessMap: floorAoRoughnessMetalnessTexture,
-    metalnessMap: floorAoRoughnessMetalnessTexture,
-  })
-);
-floor.rotation.x = -Math.PI * 0.5;
-scene.add(floor);
-
-const wallColorTexture = textureLoader.load(
-  "/textures/castle_brick_broken_06/castle_brick_broken_06_diff_1k.jpg"
-);
-const wallNormalTexture = textureLoader.load(
-  "/textures/castle_brick_broken_06/castle_brick_broken_06_nor_gl_1k.png"
-);
-const wallAoRoughnessMetalnessTexture = textureLoader.load(
-  "/textures/castle_brick_broken_06/castle_brick_broken_06_arm_1k.jpg"
-);
-
-wallColorTexture.colorSpace = THREE.SRGBColorSpace;
-
-const wall = new THREE.Mesh(
-  new THREE.PlaneGeometry(8, 8),
-  new THREE.MeshStandardMaterial({
-    map: wallColorTexture,
-    normalMap: wallNormalTexture,
-    aoMap: wallAoRoughnessMetalnessTexture,
-    roughnessMap: wallAoRoughnessMetalnessTexture,
-    metalnessMap: wallAoRoughnessMetalnessTexture,
-  })
-);
-wall.position.y = 4;
-wall.position.z = -4;
-scene.add(wall);
 
 /**
  * Sizes
@@ -268,17 +158,16 @@ window.addEventListener("resize", () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(
-  75,
+  35,
   sizes.width / sizes.height,
   0.1,
   100
 );
-camera.position.set(4, 5, 4);
+camera.position.set(6, 5, 4);
 scene.add(camera);
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
-controls.target.y = 3.5;
 controls.enableDamping = true;
 
 /**
@@ -288,33 +177,31 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   antialias: true,
 });
-renderer.setSize(sizes.width, sizes.height);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-// tone mapping
-renderer.toneMapping = THREE.ReinhardToneMapping;
-renderer.toneMappingExposure = 10;
-
-gui.add(renderer, "toneMapping", {
-  No: THREE.NoToneMapping,
-  Linear: THREE.LinearToneMapping,
-  Reinhard: THREE.ReinhardToneMapping,
-  Cineon: THREE.CineonToneMapping,
-  ACESFilmic: THREE.ACESFilmicToneMapping,
-});
+renderer.toneMapping = THREE.CineonToneMapping;
+renderer.toneMappingExposure = 1.75;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor("#211d20");
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
  * Animate
  */
 const clock = new THREE.Clock();
-
+let previousTime = 0;
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+  const deltaTime = elapsedTime - previousTime;
+  previousTime = elapsedTime;
 
   // Update controls
   controls.update();
+
+  // Fox animation
+  if (foxMixer) {
+    foxMixer.update(deltaTime);
+  }
 
   // Render
   renderer.render(scene, camera);
