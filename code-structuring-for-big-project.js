@@ -1,36 +1,11 @@
-class Robot {
-  constructor(name, legs) {
-    this.name = name;
-    this.legs = legs;
+// import Robot from "./robot.js";
+// import FlyingRobot from "./FlyingRobot.js";
 
-    console.log(`I am ${this.name}. Thank you creator.`);
-    this.sayHi();
-  }
+import Experience from "./Experience/Experience.js";
 
-  sayHi() {
-    console.log(`Hello! My name is ${this.name}`);
-  }
-}
-
-class FlyingRobot extends Robot {
-  constructor(name, legs) {
-    super(name, legs);
-    super.sayHi();
-    console.log(`I am a flying robot `);
-  }
-  sayHi() {
-    console.log(
-      `Hello! My name is ${this.name} and i am a flying robot`
-    );
-  }
-  takeOff() {
-    console.log(`Have a good flight ${this.name}`);
-  }
-
-  land() {
-    console.log(`welcome back ${this.name}`);
-  }
-}
+const experience = new Experience(
+  document.querySelector("canvas.webgl")
+);
 
 const wallE = new Robot("Wall-E", 0);
 const ultron = new Robot("Ultron", 2);
