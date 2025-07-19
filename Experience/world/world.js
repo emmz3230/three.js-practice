@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import Experience from "../Experience";
+import Resources from "./../Utils/Resources";
 
 export default class world {
   constructor() {
     this.experience = new Experience();
     this.scene = this.experience.scene;
+    this.resources = this.experience.resources;
     // this.camera = this.experience.camera.instance;
     // this.renderer = this.experience.renderer.instance;
     const testMash = new THREE.Mesh(
@@ -13,7 +15,9 @@ export default class world {
     );
     // this.setWorld();
     this.scene.add(this.world);
-
-    this.environment = new Environment();
+    this.resources.on("ready", () => {
+      this.environment = new Environment();
+      this.floor = new Floor();
+    });
   }
 }
