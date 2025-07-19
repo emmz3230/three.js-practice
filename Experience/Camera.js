@@ -1,4 +1,6 @@
+import * as THREE from "three";
 import Experience from "./Experience";
+
 export default class Camera {
   constructor() {
     this.experience = new Experience();
@@ -11,7 +13,7 @@ export default class Camera {
     this.sizes.on("resize", () => {});
   }
   setInstance() {
-    this.instance = new ThreeMFLoader.PersPectiveCamera(
+    this.instance = new THREE.PersPectiveCamera(
       35,
       this.sizes.width / this.sizes.height,
       0.1,
