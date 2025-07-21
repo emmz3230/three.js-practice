@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import GUI from "lil-gui";
-import testVertexShader from "./shaders/testVertex.glsl";
-import testFragmentShader from "./shaders/testFragment.glsl";
+import vertexShader from "./shaders/test/vertex.glsl";
+import fragmentShader from "./shaders/test/fragment.glsl";
 
 // debug
 const gui = new GUI();
@@ -17,8 +17,8 @@ const scene = new THREE.Scene();
 const textureLoader = new THREE.TextureLoader();
 
 const material = new THREE.RawShaderMaterial({
-  vertexShader: testVertexShader,
-  fragmentShader: testFragmentShader,
+  vertexShader: vertexShader,
+  fragmentShader: fragmentShader,
 });
 
 // test mesh
