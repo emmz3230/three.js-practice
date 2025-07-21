@@ -152,3 +152,25 @@ what is HDRi
 
 how to destroy thing source:(code structuring time 3:08:54)
 also read three.js documentation on how to dispose of things
+
+what is shader?
+
+         one of the main componanet of webGl
+         must learn at first if doing native WEBGL
+         written in glsl,sent to the gpu,position each vertex of a geometry,colorize each visible pixel of that geometry
+
+what is pixel ?
+pixel isn't accurate because each point in the render doesn't neccesarily match each pixel of the screen
+fragment are like pixel but for render
+attribute is a value that is different between each vertex
+
+always look out for camel case word in solving error
+
+shader language support for vscode (extension)
+
+linter to show your glsl cod ehave error tutorial(lewis lepton tutorial)
+how to install glsl plugin using npm
+
+              npm install vite-plugin-glsl
+
+there is a glsl plugin needed
