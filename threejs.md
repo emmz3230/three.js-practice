@@ -149,3 +149,6 @@ to search on object
 what is HDRi
 
         High Dynamic Range Image
+
+how to destroy thing source:(code structuring time 3:08:54)
+also read three.js documentation on how to dispose of things
