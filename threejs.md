@@ -174,3 +174,43 @@ how to install glsl plugin using npm
               npm install vite-plugin-glsl
 
 there is a glsl plugin needed
+
+float are decimals
+
+        float foobar = 0.003
+
+not
+
+        float my = 4
+
+int is a vartiable without decimals
+
+        int foo = 098
+
+not
+
+        int foo = 0.98
+
+boolean
+
+        bool foo= true
+        bool foo= false
+
+where to learn about matrices and coordinate
+
+        learnopengl.com
+
+varying and attribute is use to send variable from vertex to fragment
+
+where to learn more about shaders
+
+        books of shader
+        shadertoy
+        the art of code youtube channel
+        lewis lepton  youtube channel
+
+use _step_ instead of if else for performances
+
+how to solve the fxify issue shader pattern
+
+remeber never put comma where it is not suppose to be and put it where it is to be.also always put bracket where it is suppose to be too.
