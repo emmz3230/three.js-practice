@@ -3,7 +3,7 @@
 image
 
 2.  arrange the accordingly
-    e.g putting your canvas and scene code below won't give any reult you have to put them first above all your code below the imports.
+    e.g putting your canvas and scene code below won't give any result you have to put them first above all your code below the imports.
 
                         const fontLoader = new FontLoader();
                         fontLoader.load("/fonts/helvetiker_regular.typeface.json",
@@ -57,7 +57,7 @@ image
 
                 scene.fog = fog;
 
-when ever ther eis aomap always use the _uv2_
+when ever there  is aomap always use the _uv2_
 
         plane.geometry.setAttribute(
 
@@ -68,7 +68,7 @@ when ever ther eis aomap always use the _uv2_
         )
         );
 
-don't use multiplication (\*) whre you are to use addition sign(+)
+don't use multiplication (\*) where you are to use addition sign(+)
 
 how to install cannon.js
 
