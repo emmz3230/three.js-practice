@@ -6,6 +6,7 @@ import fragmentShader from "./shaders/raging-sea/fragment.glsl";
 
 // debug
 const gui = new GUI({ width: 340 });
+const debugObject = {};
 
 // canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -17,14 +18,31 @@ const scene = new THREE.Scene();
 // const textureLoader = new THREE.TextureLoader();
 
 // test mesh
-const waterGeometry = new THREE.PlaneGeometry(2, 2, 128, 128);
+const waterGeometry = new THREE.PlaneGeometry(2, 2, 512, 512);
+
+debugObject.depthColor = "#186691";
+debugObject.surfaceColor = "#8888ff";
 
 const waterMaterial = new THREE.ShaderMaterial({
   vertexShader: vertexShader,
   fragmentShader: fragmentShader,
   uniforms: {
+    uTime: { value: 0 },
     uBigWavesElevation: { values: 0.2 },
     uBigWavesFrequency: { value: new THREE.Vector2(4, 1.5) },
+    uBigWaveSpeed: { value: 0.5 },
+
+    uSmallElevation: { value: 0.15 },
+    uSmallWavesFrequency: { value: 3.0 },
+    uSmallWavesSpeed: { value: 0.2 },
+    uSmallWavesIterations: { value: 4 },
+
+    uDepthColor: { value: new THREE.Color(debugObject.depthColor) },
+    uSurfaceColor: {
+      value: new THREE.Color(debugObject.surfaceColor),
+    },
+    uColorOffset: { value: 0.25 },
+    uColorMultiplier: { value: 2 },
   },
 });
 
@@ -78,10 +96,13 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 // animate
-// const clock = new THREE.Clock();
+const clock = new THREE.Clock();
 
 const tick = () => {
-  //   const elaspsedTime = clock.getElapsedTime();
+  const elaspsedTime = clock.getElapsedTime();
+
+  // update water
+  waterMaterial.uniforms.uTime.value = elaspsedTime;
 
   //update controls
   controls.update();
