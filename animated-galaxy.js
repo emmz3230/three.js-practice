@@ -1,22 +1,17 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import GUI from "lil-gui";
+import { GUI } from "three/examples/jsm/libs/lil-gui.module.min.js";
+import { color } from "three/src/nodes/TSL.js";
 
-/**
- * Base
- */
-// Debug
+// debug
 const gui = new GUI();
 
-// Canvas
+// canvas
 const canvas = document.querySelector("canvas.webgl");
 
-// Scene
+// scene
 const scene = new THREE.Scene();
 
-/**
- * Galaxy
- */
 const parameters = {};
 parameters.count = 200000;
 parameters.size = 0.005;
@@ -39,21 +34,17 @@ const generateGalaxy = () => {
     scene.remove(points);
   }
 
-  /**
-   * Geometry
-   */
+  //   geometry
   geometry = new THREE.BufferGeometry();
-
   const positions = new Float32Array(parameters.count * 3);
   const colors = new Float32Array(parameters.count * 3);
 
-  const insideColor = new THREE.Color(parameters.insideColor);
-  const outsideColor = new THREE.Color(parameters.outsideColor);
+  const insideColors = new THREE.Color(parameters.insideColor);
+  const outsideColors = new THREE.Color(parameters.outsideColor);
 
   for (let i = 0; i < parameters.count; i++) {
     const i3 = i * 3;
 
-    // Position
     const radius = Math.random() * parameters.radius;
 
     const branchAngle =
@@ -75,19 +66,17 @@ const generateGalaxy = () => {
       parameters.randomness *
       radius;
 
-    positions[i3] = Math.cos(branchAngle) * radius + randomX;
+    positions[i3 + 0] = Math.cos(branchAngle) * radius + randomX;
     positions[i3 + 1] = randomY;
     positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ;
 
-    // Color
-    const mixedColor = insideColor.clone();
-    mixedColor.lerp(outsideColor, radius / parameters.radius);
+    const mixedColor = insideColors.clone();
+    mixedColor.lerp(outsideColors, radius / parameters.radius);
 
-    colors[i3] = mixedColor.r;
+    colors[i3 + 0] = mixedColor.r;
     colors[i3 + 1] = mixedColor.g;
     colors[i3 + 2] = mixedColor.b;
   }
-
   geometry.setAttribute(
     "position",
     new THREE.BufferAttribute(positions, 3)
@@ -96,10 +85,8 @@ const generateGalaxy = () => {
     "color",
     new THREE.BufferAttribute(colors, 3)
   );
+  //   material
 
-  /**
-   * Material
-   */
   material = new THREE.PointsMaterial({
     size: parameters.size,
     sizeAttenuation: true,
@@ -107,14 +94,10 @@ const generateGalaxy = () => {
     blending: THREE.AdditiveBlending,
     vertexColors: true,
   });
-
-  /**
-   * Points
-   */
+  //   points
   points = new THREE.Points(geometry, material);
   scene.add(points);
 };
-
 generateGalaxy();
 
 gui
@@ -154,72 +137,53 @@ gui
   .addColor(parameters, "outsideColor")
   .onFinishChange(generateGalaxy);
 
-/**
- * Sizes
- */
 const sizes = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
 
 window.addEventListener("resize", () => {
-  // Update sizes
   sizes.width = window.innerWidth;
   sizes.height = window.innerHeight;
 
-  // Update camera
   camera.aspect = sizes.width / sizes.height;
   camera.updateProjectionMatrix();
 
-  // Update renderer
   renderer.setSize(sizes.width, sizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-/**
- * Camera
- */
-// Base camera
+// camera
 const camera = new THREE.PerspectiveCamera(
   75,
-  sizes.width / sizes.height,
-  0.1,
-  100
+  window.innerWidth / window.innerHeight
 );
 camera.position.x = 3;
 camera.position.y = 3;
 camera.position.z = 3;
 scene.add(camera);
 
-// Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
-/**
- * Renderer
- */
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-/**
- * Animate
- */
 const clock = new THREE.Clock();
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
-  // Update controls
+  // update controls
   controls.update();
 
-  // Render
+  // render
   renderer.render(scene, camera);
 
-  // Call tick again on the next frame
+  // call tick again on the next frame
   window.requestAnimationFrame(tick);
 };
-
 tick();
