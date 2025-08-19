@@ -39,9 +39,9 @@ const generateGalaxy = () => {
   //   geometry
   geometry = new THREE.BufferGeometry();
   const positions = new Float32Array(parameters.count * 3);
+  const randomness = new Float32Array(parameters.count * 3);
   const colors = new Float32Array(parameters.count * 3);
   const scales = new Float32Array(parameters.count * 1);
-  const randomness = new Float32Array(parameters.count * 3);
 
   const insideColors = new THREE.Color(parameters.insideColor);
   const outsideColors = new THREE.Color(parameters.outsideColor);
@@ -74,6 +74,11 @@ const generateGalaxy = () => {
     positions[i3 + 1] = 0;
     positions[i3 + 2] = Math.sin(branchAngle) * radius;
 
+    randomness[i3 + 0] = randomX;
+    randomness[i3 + 1] = randomY;
+    randomness[i3 + 2] = randomZ;
+
+    // color
     const mixedColor = insideColors.clone();
     mixedColor.lerp(outsideColors, radius / parameters.radius);
 
@@ -111,7 +116,7 @@ const generateGalaxy = () => {
     fragmentShader: fragmentShader,
     uniforms: {
       uTime: { value: 0 },
-      uSize: { value: 8 * renderer.setPixelRatio() },
+      uSize: { value: 30 * renderer.setPixelRatio() },
     },
   });
   //   points

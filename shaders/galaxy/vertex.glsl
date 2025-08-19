@@ -1,10 +1,10 @@
-uniform float uSize;
 uniform float uTime;
+uniform float uSize;
 
+attribute vec3 aRandomness;
 attribute float aScale;
 
 varying vec3 vColor;
-attribute vec3 aRandomness;
 
 void main(){
     // position
@@ -12,14 +12,12 @@ void main(){
     
     float angle = atan(modelPosition.x, modelPosition.z);
     float distanceToCenter = length(modelPosition.xz);
-    float angleOffset = (1.0 / distanceToCenter) * uTime * 0.2;
+    float angleOffset = (1.0 / distanceToCenter) * uTime;
     angle += angleOffset;
     modelPosition.x = cos(angle) * distanceToCenter;
     modelPosition.y = sin(angle) * distanceToCenter;
 
-
     modelPosition.xyz += aRandomness;
-
     
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
