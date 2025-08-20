@@ -57,7 +57,7 @@ image
 
                 scene.fog = fog;
 
-when ever there  is aomap always use the _uv2_
+when ever there is aomap always use the _uv2_
 
         plane.geometry.setAttribute(
 
@@ -214,3 +214,10 @@ use _step_ instead of if else for performances
 how to solve the fxify issue shader pattern
 
 remeber never put comma where it is not suppose to be and put it where it is to be.also always put bracket where it is suppose to be too.
+
+## website to see perlin noise texture instead of making it
+
+      1. http://kitfox.com/projects/perlinNoiseMaker/
+      2. https://opengameart.org/content/noise-texture-pack
+      3. http://mebiusbox.github.io/contents/effectTextureMaker
+      4.  https://mebiusbox.github.io/contents/EffectTextureMaker/
