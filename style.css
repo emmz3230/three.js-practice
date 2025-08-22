@@ -5,10 +5,10 @@
 html {
   background: #1e1a20;
 }
-/* html,
+html,
 body {
   overflow: hidden;
-} */
+}
 .webgl {
   position: fixed;
   top: 0;
