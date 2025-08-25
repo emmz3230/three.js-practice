@@ -69,10 +69,27 @@ gui.addColor(rendererParameters, "clearColor").onChange(() => {
   renderer.setClearColor(rendererParameters.clearColor);
 });
 
+const materialParameters = {};
+materialParameters.color = "#70c1ff";
+
+gui.addColor(materialParameters, "color").onChange(() => {
+  material.uniforms.uColor.value.set(materialParameters.color);
+});
+
 // material
 const material = new THREE.ShaderMaterial({
   vertexShader: vertexShader,
   fragmentShader: fragmentShader,
+  uniforms: {
+    uTime: new THREE.Uniform(0),
+    uColor: new THREE.Uniform(
+      new THREE.Color(materialParameters.color)
+    ),
+  },
+  transparent: true,
+  side: THREE.DoubleSide,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
 });
 
 // objects
@@ -105,6 +122,8 @@ gltfLoader.load("./suzanne.glb", (gltf) => {
 const clock = new THREE.Clock();
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+  //   update material
+  material.uniforms.uTime.value = elapsedTime;
 
   // rotate objects
   if (suzuanne) {
