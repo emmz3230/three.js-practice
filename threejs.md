@@ -221,3 +221,12 @@ remeber never put comma where it is not suppose to be and put it where it is to 
       2. https://opengameart.org/content/noise-texture-pack
       3. http://mebiusbox.github.io/contents/effectTextureMaker
       4.  https://mebiusbox.github.io/contents/EffectTextureMaker/
+
+note: for fxify there is how to layer two shader on them self check fireworks shader.
+
+note: for the jupiter web use the code below and make the light bright.
+
+        const pointLightHelper2 = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(0.9, 2),
+        new THREE.MeshBasicMaterial()
+        );
