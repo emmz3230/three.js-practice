@@ -1,6 +1,3 @@
-uniform sampler2D uDayTexture;
-uniform sampler2D uNightTexture;
-uniform sampler2D uSpecularCloudsTexture;
 uniform vec3 uSunDirection;
 uniform vec3 uAtmosphereDayColor;
 uniform vec3 uAtmosphereTwilightColor;
@@ -24,45 +21,25 @@ void main()
     // sun orientation
     vec3 uSunDirection = vec3(0.0,0.0,1.0);
     float sunOrientation = dot(uSunDirection,normal);
-    color = vec3(sunOrientation);
+    color += atmosphereColor;
 
-    // day /night
-    float dayMix = smoothstep(-0.25, 0.5, sunOrientation);
-    vec3 dayColor = texture(uDayTexture,vUv).rgb;
-    vec3 nightColor = texture(uNightTexture,vUv).rgb;
-    color = mix(nightColor,dayColor,dayMix);
-
-    // specualr clouds color
-    vec2 specularCloudsColor = texture(uSpecularCloudsTexture,vUv).rg;
-    // color = vec3(specularCloudsColor,0.0);
-
-    // clouds
-    float cloudsMix = smoothstep(0.5,1.0,specularCloudsColor.g);
-    cloudsMix *= dayMix;
-    color = mix(color,vec3(1.0), cloudsMix);
-
-    // freshnel
-    float freshnel = dot(viewDirection,normal) + 1.0;
-    freshnel = pow(freshnel,2.0);
-    // color = vec3(freshnel);
-
-    // atmosphere
+      // atmosphere
     float atmosphereDayMix = smoothstep(-0.5,1.0,sunOrientation);
     vec3 atmosphereColor = mix(uAtmosphereTwilightColor,uAtmosphereDayColor,atmosphereDayMix);
-    color = mix(color,atmosphereColor,freshnel * atmosphereDayMix);
+    color = mix(color,atmosphereColor);
 
-    // specular 
-    vec3 reflection = reflect(-uSunDirection,normal);
-    float specular = - dot(reflection,viewDirection);
-    specular = max(specular,0.0);
-    specular = pow(specular,32.0);
-    specular *= specularCloudsColor.r;
-    vec3 specularColor = mix(vec3(1.0),atmosphereColor,freshnel);
-    color += specular * specularColor;
+     // alpha
+    float edgeAlpha = dot(viewdirection,normal);
+    edgeAlpha = smoothstep(0.00,0.5,edgeAlpha);
+    // color = vec3(edgeAlpha);
 
+    float dayAlpha = smoothstep(-0.5,0.0,sunOrientation)
+    // color = vec3(dayAlpha);
 
+    float alpha = edgeAlpha * dayAlpha;
+    
     // Final color
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color, alpha);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
 }
