@@ -3,6 +3,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+import CustomShaderMaterial from "three-custom-shader-material/vanilla";
 import GUI from "lil-gui";
 
 /**
@@ -39,7 +40,11 @@ rgbeLoader.load("static/urban_alley_01_1k.hdr", (environmentMap) => {
  * Wobble
  */
 // Material
-const material = new THREE.MeshPhysicalMaterial({
+const material = new THREE.CustomShaderMaterial({
+  // csm
+  baseMaterial: THREE.MeshPhysicalMaterial,
+
+  // MeshPhysicalMaterial
   metalness: 0,
   roughness: 0.5,
   color: "#ffffff",
