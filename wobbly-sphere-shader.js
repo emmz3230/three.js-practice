@@ -5,6 +5,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import CustomShaderMaterial from "three-custom-shader-material/vanilla";
 import GUI from "lil-gui";
+import woobleVertexShader from "./shaders/wooble/vertex.glsl";
+import woobleFragmentShader from "./shaders/wooble/fragment.glsl";
 
 /**
  * Base
@@ -43,6 +45,8 @@ rgbeLoader.load("static/urban_alley_01_1k.hdr", (environmentMap) => {
 const material = new THREE.CustomShaderMaterial({
   // csm
   baseMaterial: THREE.MeshPhysicalMaterial,
+  vertexShader: woobleVertexShader,
+  fragementShader: woobleFragmentShader,
 
   // MeshPhysicalMaterial
   metalness: 0,
