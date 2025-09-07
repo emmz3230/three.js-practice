@@ -230,3 +230,7 @@ note: for the jupiter web use the code below and make the light bright.
         new THREE.IcosahedronGeometry(0.9, 2),
         new THREE.MeshBasicMaterial()
         );
+
+how to install custom shaders
+
+        npm install three-custom-shader-material@5.4
