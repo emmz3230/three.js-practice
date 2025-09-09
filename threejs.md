@@ -234,3 +234,5 @@ note: for the jupiter web use the code below and make the light bright.
 how to install custom shaders
 
         npm install three-custom-shader-material@5.4
+
+how to install procedural _npm install three-bvh-csg@0.0.16_
