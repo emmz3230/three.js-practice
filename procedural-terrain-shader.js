@@ -2,7 +2,10 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { SUBTRACTION, Evaluator, Brush } from "three-bvh-csg";
+import CustomShaderMaterial from "three-custom-shader-material/vanilla";
 import GUI from "lil-gui";
+import terrainVertexShader from "./shaders/terrain/vertex.glsl";
+import terrainFragmentShader from "./shaders/terrain/fragment.glsl";
 
 /**
  * Base
@@ -40,11 +43,134 @@ const placeholder = new THREE.Mesh(
 );
 scene.add(placeholder);
 
+// terrain
+// geometry
+const geometry = new THREE.PlaneGeometry(10, 10, 500, 500);
+geometry.deleteAttribute("uv");
+geometry.deleteAttribute("normal");
+geometry.rotateX(-Math.PI * 0.5);
+
+debugObject.colorWaterDeep = "#002b3d";
+debugObject.colorWaterSurface = "#66a8ff";
+debugObject.colorSand = "#ffe894";
+debugObject.colorGrass = "#85d534";
+debugObject.colorSnow = "#ffffff";
+debugObject.colorRock = "#bfbd8d";
+
+const uniforms = {
+  uTime: new THREE.Uniform(0),
+  uPositionFrequency: new THREE.Uniform(0.2),
+  uStrength: new THREE.Uniform(2.0),
+  uWarpFrequency: new THREE.Uniform(5),
+  uWrapStrength: new THREE.Uniform(0.5),
+
+  uColorWaterDeep: new THREE.Uniform(
+    new THREE.Color(debugObject.colorWaterDeep)
+  ),
+  uColorWaterSurface: new THREE.Uniform(
+    new THREE.Color(debugObject.colorWaterSurface)
+  ),
+  uColorSand: new THREE.Uniform(
+    new THREE.Color(debugObject.colorSand)
+  ),
+  uColorGrass: new THREE.Uniform(
+    new THREE.Color(debugObject.colorGrass)
+  ),
+  uColorSnow: new THREE.Uniform(
+    new THREE.Color(debugObject.colorSnow)
+  ),
+  uColorRock: new THREE.Uniform(
+    new THREE.Color(debugObject.colorRock)
+  ),
+};
+gui
+  .add(uniforms.uPositionFrequency, "value", 0, 1, 0.001)
+  .name("uPositionFrequency");
+gui
+  .add(uniforms.uStrength, "value", 0, 1, 0.001)
+  .name("uStrength");
+// gui
+//   .add(uniforms.uWarpFrequency,"value", 0, 10, 0.001)
+//   .name("uWarpFrequency");
+// gui
+//   .add(uniforms.uWarpStrength, "value", 0, 1, 0.001)
+//   .name("uWarpStrength");
+
+  
+gui.addColor(debugObject, "colorWaterDeep").onChange(() => uniforms.uColorWaterDeep.value.set(debugObject.colorWaterDeep));
+gui.addColor(debugObject, "colorWaterSurface").onChange(() => uniforms.uColorWaterSurface.value.set(debugObject.colorWaterSurface));
+gui.addColor(debugObject, "colorSand").onChange(() => uniforms.uColorSand.value.set(debugObject.colorSand));
+gui.addColor(debugObject, "colorGrass").onChange(() => uniforms.uColorGrass.value.set(debugObject.colorGrass));
+gui.addColor(debugObject, "colorSnow").onChange(() => uniforms.uColorSnow.value.set(debugObject.colorSnow));
+gui.addColor(debugObject, "colorRock").onChange(() => uniforms.uColorRock.value.set(debugObject.colorRock));
+
+// Material
+const material = new CustomShaderMaterial({
+  // CSM
+  baseMaterial: THREE.MeshStandardMaterial,
+  vertexShader: terrainVertexShader,
+  fragmentShader: terrainFragmentShader,
+  uniforms: uniforms,
+  silent: true,
+
+  // MeshStandardMaterial
+  metalness: 0,
+  roughness: 0.5,
+  color: "#85d534",
+});
+
+const depthMaterial = new CustomShaderMaterial({
+  // CSM
+  baseMaterial: THREE.MeshStandardMaterial,
+  vertexShader: terrainVertexShader,
+  uniforms: uniforms,
+  silent: true,
+
+  // MeshDepthMaterial
+   depthPacking: THREE.RGBADepthPacking
+});
+
+// mesh
+const terrain = new THREE.Mesh(geometry, material);
+terrain.customDepthMaterial = depthMaterial;
+terrain.receiveShadow = true;
+terrain.castShadow = true;
+scene.add(terrain);
+
+// water
+const water = new THREE.Mesh(
+  new THREE.PlaneGeometry(10,10,1,1),
+  new THREE.MeshPhysicalMaterial({
+    transmission:1,
+    roughness:0.3
+  }),
+)
+water.rotation.x = -Math.PI * 0.5
+water.position.y = -0.1
+scene.add(water);
+
+
+
 const boardFill = new Brush(new THREE.BoxGeometry(11, 2, 11));
 const boardHole = new Brush(new THREE.BoxGeometry(10, 2.1, 10));
+boardHole.position.y = 0.2;
+boardHole.position.x = 0.2;
+// boardHole.updateProjectionMatrix();
+
+boardFill.material.color.set("red");
+boardHole.material = new THREE.MeshNormalMaterial();
 
 const evaluator = new Evaluator();
 const board = evaluator.evaluate(boardFill, boardHole, SUBTRACTION);
+board.geometry.clearGroups();
+board.material = new THREE.MeshStandardMaterial({
+  color: "#ffffff",
+  metalness: 0,
+  roughness: 0.3,
+});
+board.castShadow = true;
+board.castShadow = true;
+
 scene.add(board);
 
 /**

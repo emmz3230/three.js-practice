@@ -7,7 +7,7 @@ import GUI from "lil-gui";
 import CustomShaderMaterial from "three-custom-shader-material/vanilla";
 import slicedVertexShader from "./shaders/sliced/vertex.glsl";
 import slicedFragmentShader from "./shaders/sliced/fragment.glsl";
-import { uniform } from "three/tsl";
+
 
 /**
  * Base
@@ -78,7 +78,7 @@ const material = new THREE.MeshStandardMaterial({
   envMapIntensity: 0.5,
   color: "#858080",
 });
-const slicedMaterial = new THREE.CustomShaderMaterial({
+const slicedMaterial = new CustomShaderMaterial({
   // csm
   baseMaterial: THREE.MeshStandardMaterial,
   vertexShader: slicedVertexShader,
@@ -94,20 +94,14 @@ const slicedMaterial = new THREE.CustomShaderMaterial({
   side: THREE.DoubleSide,
 });
 
-const slicedDepthMaterial = new THREE.CustomShaderMaterial({
+const slicedDepthMaterial = new CustomShaderMaterial({
   // csm
   baseMaterial: THREE.MeshDepthMaterial,
   vertexShader: slicedVertexShader,
   fragmentShader: slicedFragmentShader,
   uniforms: uniforms,
-  patchMap :patchMap,
+  patchMap: patchMap,
   silent: true,
-
-  metalness: 0.5,
-  roughness: 0.25,
-  envMapIntensity: 0.5,
-  color: "#858080",
-  side: THREE.DoubleSide,
 
   // MeshDepthMaterial
   depthPacking: THREE.RGBADepthPacking
