@@ -43,8 +43,8 @@ const cube = new THREE.Mesh(
 
 scene.add(cube);
 
-gltfLoader.load("static/portal.glb", () => {
-  console.log(loaded);
+gltfLoader.load("static/portal.glb", (gltf) => {
+  console.log(gltf.scene);
 });
 /**
  * Sizes
