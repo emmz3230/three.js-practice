@@ -4,6 +4,11 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
+// spector js
+// const SPECTOR = require("spectorjs");
+// const spector = new SPECTOR.Spector();
+// spector.displayUI();
+
 /**
  * Base
  */
@@ -33,22 +38,46 @@ const gltfLoader = new GLTFLoader();
 gltfLoader.setDRACOLoader(dracoLoader);
 
 // texture
-const bakedTextuire = textureLoader("/baked.jpg");
-
+const bakedTexture = textureLoader.load("static/baked.jpg");
+bakedTexture.flipY = false;
+bakedTexture.encoding = THREE.sRGBEncoding;
 /**
  * Object
  */
 
 // materials
 const bakedMaterial = new THREE.MeshBasicMaterial({
-  color: 0xff0000,
+  map: bakedTexture,
+});
+// portalLightMaterial
+const portalLightMaterial = new THREE.MeshBasicMaterial({
+  color: 0xffffff,
+});
+// poleLightMaterial
+const poleLightMaterial = new THREE.MeshBasicMaterial({
+  color: 0xffffe5,
 });
 
 // model
 gltfLoader.load("static/portal.glb", (gltf) => {
-  gltf.scene.traverse((child) => {
-    child.material = bakedMaterial;
-  });
+  const bakedMesh = gltf.scene.children.find(
+    (child) => child.name === "baked"
+  );
+
+  const portalLightMesh = gltf.scene.children.find(
+    (child) => child.name === "portalLight"
+  );
+  const poleLightAMesh = gltf.scene.children.find(
+    (child) => child.name === "poleLightA"
+  );
+  const poleLightBMesh = gltf.scene.children.find(
+    (child) => child.name === "poleLightB"
+  );
+  bakedMesh.material = bakedMaterial;
+  portalLightMesh.material = portalLightMaterial;
+  poleLightAMesh.material = poleLightMaterial;
+  poleLightBMesh.material = poleLightMaterial;
+
   scene.add(gltf.scene);
 });
 
