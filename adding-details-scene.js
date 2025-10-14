@@ -4,8 +4,9 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import firefliesVertexShader from "./shaders/fireflies/vertex.glsl";
-import firefliesVertexFragment from "./shaders/fireflies/fragment.glsl";
-import { uniform } from "three/tsl";
+import firefliesFragment from "./shaders/fireflies/fragment.glsl";
+import portalVertexShader from "./shaders/portal/vertex.glsl";
+import portalFragment from "./shaders/portal/fragment.glsl";
 
 /**
  * Base
@@ -57,8 +58,12 @@ const poleLightMaterial = new THREE.MeshBasicMaterial({
 });
 
 // Portal light material
-const portalLightMaterial = new THREE.MeshBasicMaterial({
-  color: 0xffffff,
+const portalLightMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime: { value: 0 },
+  },
+  vertexShader: portalVertexShader,
+  fragmentShader: portalFragment,
 });
 
 /**
@@ -113,7 +118,7 @@ const firefliesMaterial = new THREE.ShaderMaterial({
     uSize: { value: 100 },
   },
   vertexShader: firefliesVertexShader,
-  fragmentShader: firefliesVertexFragment,
+  fragmentShader: firefliesFragment,
   transparent: true,
   blending: THREE.AdditiveBlending,
   depthWrite: false,
@@ -197,6 +202,7 @@ const tick = () => {
   const elapsedTime = clock.getElapsedTime();
 
   // Update fireflies
+  portalLightMaterial.uniforms.uTime.value = elapsedTime;
   firefliesMaterial.uniforms.uTime.value = elapsedTime;
 
   // Update controls
