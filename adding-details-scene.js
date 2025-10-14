@@ -93,11 +93,13 @@ gltfLoader.load("static/portal.glb", (gltf) => {
 const firefliesGeometry = new THREE.BufferGeometry();
 const firefliesCount = 30;
 const positionArray = new Float32Array(firefliesCount * 3);
+const scaleArray = new Float32Array(firefliesCount);
 
 for (let i = 0; i < firefliesCount; i++) {
   positionArray[i * 3 + 0] = (Math.random() - 0.5) * 4;
   positionArray[i * 3 + 1] = Math.random() * 1.5;
   positionArray[i * 3 + 2] = (Math.random() - 0.5) * 4;
+  scaleArray[i] = Math.random();
 }
 firefliesGeometry.setAttribute(
   "position",
@@ -107,9 +109,13 @@ firefliesGeometry.setAttribute(
 const firefliesMaterial = new THREE.ShaderMaterial({
   uniform: {
     uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+    uSize: { value: 100 },
   },
   vertexShader: firefliesVertexShader,
   fragmentShader: firefliesVertexFragment,
+  transparent: true,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
 });
 
 const fireflies = new THREE.Points(
